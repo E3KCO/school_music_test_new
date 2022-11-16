@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+<!--        <template id="assets_backend" name="event assets" inherit_id="web.assets_backend">-->
+<!--            <xpath expr="." position="inside">-->
+<!--                <link rel="stylesheet" type="text/scss" href="/music_school/static/src/scss/tender.scss"/>-->
+<!--            </xpath>-->
+<!--        </template>-->
+
+    <record id="music_school.tender_scss" model="ir.asset">
+        <field name="name">tender  SCSS</field>
+        <field name="bundle">web.assets_backend</field>
+        <field name="path">music_school/static/src/scss/tender.scss</field>
+        <field name="active" eval="True"/>
+    </record>
+
+        <record id="view_partner_form_is_teacher" model="ir.ui.view">
+            <field name="name">view.partner.form.is.teacher.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="category_id" position="after">
+                    <field name="is_teacher"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="hr_employee_view_form_music" model="ir.ui.view">
+            <field name="name">hr.employee.view.form.inherit.music</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <field name="job_id" position="after">
+                    <field name="is_teacher"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_add_lessons" model="ir.ui.view">
+            <field name="name">add.lessons.students</field>
+            <field name="model">add.lessons</field>
+            <field name="arch" type="xml">
+                <form string="Add Lessons">
+                    <header>
+                        <button icon="fa-cogs" string="Add Lesson" name="compute_sheet" type="object"
+                                class="oe_highlight"/>
+                    </header>
+                    <group>
+                        <h1 colspan="4" nolabel="1"
+                            string="This wizard will generate lessons for all selected students."/>
+                        <field name="lesson_name" />
+                    </group>
+                    <group colspan="4">
+                        <separator string="Students" colspan="4"/>
+                        <newline/>
+                        <field name="student_ids" nolabel="1">
+                            <tree>
+                                <field name="title"/>
+                                <field name="name"/>
+<!--                                <field name="middle_name"/>-->
+<!--                                <field name="last_name"/>-->
+<!--                                <field name="lang"/>-->
+                            </tree>
+                        </field>
+                        <field name="company_id" nolabel="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_add_lessons" model="ir.actions.act_window">
+            <field name="name">Add Lessons</field>
+            <field name="res_model">add.lessons</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_add_lessons"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="student_class_tree" model="ir.ui.view">
+            <field name="name">student.class.tree</field>
+            <field name="model">student.class</field>
+            <field name="arch" type="xml">
+                <tree string="Student Classes">
+                    <field name="name"/>
+                    <field name="service_id"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor"/>
+                    <field name="location"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="available_spaces"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="student_class_view_kanban" model="ir.ui.view">
+            <field name="name">student.class.kanban</field>
+            <field name="model">student.class</field>
+            <field name="arch" type="xml">
+                <kanban class="o_tender_kanban_view">
+                    <field name="state"/>
+                    <field name="name"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor"/>
+                    <field name="location"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="repeat"/>
+                    <field name="color"/>
+                    <field name="lesson_count"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click oe_semantic_html_override">
+                                <div class="o_dropdown_kanban dropdown">
+
+                                    <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown"
+                                       href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <t t-if="widget.editable">
+                                            <a role="menuitem" type="edit" class="dropdown-item">Edit...</a>
+                                        </t>
+                                        <t t-if="widget.deletable">
+                                            <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                        </t>
+                                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                    </div>
+                                </div>
+                                <div class="o_tender_right">
+                                    <strong>
+                                        <span name="name" style="color: #1c7e6d;" class="oe_kanban_title1">Name:
+                                            <field name="name"/>
+                                            <br/>
+                                        </span>
+                                    </strong>
+                                    <span name="start_date" class="oe_kanban_title1">
+                                        <strong>Start Date:</strong>
+                                        <field name="start_date"/>
+                                        <br/>
+                                    </span>
+                                    <span name="end_date">
+                                        <strong>End Date:</strong>
+                                        <field name="end_date"/>
+                                        <br/>
+                                    </span>
+                                    <span class="oe_grey">
+                                        <strong>Instructor:</strong>
+<!--                                        <field name="instructor"/>-->
+                                        <field name="partner_instructor"/>
+                                        <br/>
+                                    </span>
+                                    <span>
+                                        <strong>Location:</strong>
+                                        <field name="location"/>
+                                    </span>
+                                </div>
+                                <div class="o_tender_left">
+                                    <a type="object" name="view_lesson" style="color:#f2f5f5;">
+                                        <div class="o_day">
+                                            <t t-esc="record.lesson_count.raw_value"/>
+                                        </div>
+                                        <div>
+                                            Lessons
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="oe_clear"></div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="student_class_form" model="ir.ui.view">
+            <field name="name">student.class.form</field>
+            <field name="model">student.class</field>
+            <field name="arch" type="xml">
+                <form string="Student Classes">
+                    <header>
+                        <button name="%(action_view_add_lessons)d" type="action" states="draft" string="Add Lessons"
+                                class="oe_highlight"/>
+                        <button name="lesson_start" type="object" string="Start" states="draft" class="oe_highlight"/>
+                        <button name="lesson_complete" type="object" string="Complete" states="started"
+                                class="oe_highlight"/>
+                        <button name="lesson_cancel" type="object" string="Cancel" states="draft,started,completed"
+                                class="oe_highlight"/>
+                        <button string="Create Invoice" name="create_invoice" type="object" confirm = "do you want to create an invoice ?"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="button_customer_invoices"
+                                    type="object" icon="fa-money">
+                                <field name="invoice_count" string="Invoices" widget="statinfo" icon="fa-usd"/>
+                            </button>
+                        </div>
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="start_date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                       string="From"/>
+                                <field name="end_date" attrs="{'readonly': [('state', '!=', 'draft')]}" string="To"/>
+                                <field name="service_id" attrs="{'readonly': [('state', '!=', 'draft')]}" required="1"/>
+                                <field name="equipment_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+<!--                                <field name="instructor" attrs="{'readonly': [('state', '!=', 'draft')]}"/>-->
+                                <field name="partner_instructor" domain="[('is_teacher','=',True)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="location" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="available_spaces" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="student_ids" widget="many2many_tags" attrs="{'readonly': [('state', 'not in', ['draft','started'])]}"
+                                       options="{'color_field': 'color'}"/>
+                                <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="repeat" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="sunday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                                <field name="monday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                                <field name="tuesday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                                <field name="wednesday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                            </group>
+                            <group>
+                                <field name="monthly_dates" widget="one2many_list"
+                                       attrs="{'invisible': [('repeat', '!=', 'monthly')]}">
+                                    <tree string="Monthly Dates" editable="bottom">
+                                        <field name="date"/>
+                                    </tree>
+                                </field>
+                                <field name="thursday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                                <field name="friday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                                <field name="saturday" attrs="{'invisible': [('repeat', '!=', 'weekly')]}"/>
+                            </group>
+                        </group>
+                        <separator string="Lessons"/>
+                        <field name="lesson_ids"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_student_class_tree" model="ir.actions.act_window">
+            <field name="name">Classes</field>
+            <field name="res_model">student.class</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <menuitem name="Classes" id="menu_student_class" parent="menu_music_student_root"
+                  action="action_student_class_tree"/>
+
+        <record id="view_student_lesson_search" model="ir.ui.view">
+            <field name="name">view.student.lesson.search</field>
+            <field name="model">student.lesson</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Credit">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <newline/>
+                    <filter string="Today" name="today_filter" domain="[('start_date', '&gt;=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),('start_date', '&lt;=',datetime.datetime.now().strftime('%Y-%m-%d 23:23:59'))]"/>
+
+                    <group expand="0" string="Group By...">
+                        <filter name="state" string="State"
+                                domain="[]" context="{'group_by':'state'}"/>
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="student_lesson_tree" model="ir.ui.view">
+            <field name="name">student.lesson.tree</field>
+            <field name="model">student.lesson</field>
+            <field name="arch" type="xml">
+                <tree string="Student Classes">
+                    <field name="name" string="Lesson Name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="duration"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="student_lesson_form" model="ir.ui.view">
+            <field name="name">student.lesson.form</field>
+            <field name="model">student.lesson</field>
+            <field name="arch" type="xml">
+                <form string="Student Classes">
+                    <header>
+                        <button name="lesson_start" type="object" string="Start Lesson" states="draft,confirmed"
+                                class="oe_highlight"/>
+                        <button name="lesson_complete" type="object" string="Complete Lesson" states="started,confirmed"
+                                class="oe_highlight"/>
+                        <button name="lesson_cancel" type="object" string="Cancel Lesson"
+                                states="draft,confirmed,started,completed" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <group col="4">
+                            <label for="start_date" string="Period"/>
+                            <div>
+                                <field name="start_date" class="oe_inline"/>
+                                -
+                                <field name="end_date" class="oe_inline"/>
+                            </div>
+                             <label for="lesson_duration" />
+                            <div>
+                                <field name="lesson_duration"/>  <b> Minutes</b>
+                            </div>
+
+                            <field name="service_id"/>
+<!--                            <field name="instructor"/>-->
+                            <field name="partner_instructor" domain="[('is_teacher','=',True)]"/>
+                            <field name="equipment_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id"/>
+                            <field name="student_ids" widget="many2many_tags"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'color_field': 'color'}"/>
+                        </group>
+                        <separator string="Attendance"/>
+                        <field name="attendance_ids" widget="one2many_list">
+                            <tree editable="buttom" decoration-danger="attendance == 'absent'">
+                                <field name="student_id"/>
+                                <field name="attendance" widget="label_selection"
+                                       options="{'Present': 'default', 'Absent': 'warning'}}"/>
+                                <field name="state" invisible="1"/>
+                                <button name="confirm_student" states="started" string="Present"
+                                        type="object" icon="fa-check text-success"/>
+                                <button name="cancel_student" states="started" string="Absent"
+                                        type="object" icon="fa-times-circle text-danger"/>
+                                 <field name= "to_credit" widget="boolean_toggle"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="student_id"/>
+                                            <field name="attendance"/>
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="student_lesson_calendar_view">
+            <field name="name">student.lesson.calendar</field>
+            <field name="model">student.lesson</field>
+            <field name="arch" type="xml">
+                <calendar string="Lessons" date_start="start_date" date_stop="end_date" mode="month" quick_add="False"
+                          color="service_id">
+                    <field name="service_id" filters="1"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor" filters="1"/>
+                    <field name="name"/>
+                    <field name="student_ids" string="Students"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="action_student_lesson_tree" model="ir.actions.act_window">
+            <field name="name">Lessons</field>
+            <field name="res_model">student.lesson</field>
+            <field name="view_mode">tree,calendar,form</field>
+            <field name="search_view_id" ref="view_student_lesson_search"/>
+            <field name="context">{'search_default_today_filter':1 }</field>
+        </record>
+
+        <menuitem name="Lessons" id="menu_student_lesson" parent="menu_music_student_root"
+                  action="action_student_lesson_tree"/>
+
+
+    <record id="action_start_lessons" model="ir.actions.server">
+        <field name="name">Start lessons</field>
+        <field name="model_id" ref="model_student_lesson"/>
+        <field name="binding_model_id" ref="music_school.model_student_lesson"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.start_lesson_by_lots()
+        </field>
+    </record>
+
+    <record id="action_cancel_lessons" model="ir.actions.server">
+        <field name="name">Cancel lessons</field>
+        <field name="model_id" ref="model_student_lesson"/>
+        <field name="binding_model_id" ref="music_school.model_student_lesson"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.cancel_lesson_by_lots()
+        </field>
+    </record>
+
+    <record id="action_complete_lessons" model="ir.actions.server">
+        <field name="name">Complete lessons</field>
+        <field name="model_id" ref="model_student_lesson"/>
+        <field name="binding_model_id" ref="music_school.model_student_lesson"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.complete_lesson_by_lots()
+        </field>
+    </record>
+
+    </data>
+</odoo>

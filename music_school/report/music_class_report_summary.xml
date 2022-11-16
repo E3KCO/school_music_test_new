@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="music_class_report_summary">
+            <t t-call="web.html_container">
+                    <t t-call="web.internal_layout">
+                        <div class="page">
+                            <h3 class="mb32">Attendance Summary</h3>
+                            <t t-set="info" t-value="get_header_info"/>
+                            <h3 class="text-center mb32">
+                                Analyze from <u><t t-esc="info['start_date']"/></u> to <u><t t-esc="info['end_date']"/></u>
+                            </h3>
+
+                            <table class="table table-bordered mb32" style="table-layout:auto">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <t t-foreach="get_months" t-as="month">
+                                            &lt;th class="text-center" colspan=<t t-esc="month['days']"/>&gt;<t t-esc="month['month_name']"/>&lt;/th&gt;
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2">
+                                            <strong>Days</strong>
+                                        </td>
+                                        <t t-foreach="get_day" t-as="day">
+                                            &lt;td class="text-center oe_leftfit oe_rightfit" style="background-color:<t t-esc="day['color']"/>!important; font-size: 8px; min-width: 18px"&gt; <t t-esc="day['day_str']"/>&lt;/td&gt;
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <t t-foreach="get_day" t-as="day">
+                                            &lt;td class="text-center oe_leftfit oe_rightfit" style="background-color:<t t-esc="day['color']"/>!important; font-size: 10px" &gt; <t t-esc="day['day']"/>&lt;/td&gt;
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="get_data_from_report" t-as="obj">
+                                        <tr t-if="'classes' in obj">
+                                            <td style="background-color:#ababab">
+                                                <strong><t t-esc="obj['classes']"/></strong>
+                                            </td>
+                                            <t t-foreach="obj['color']" t-as="c">
+                                                &lt;td style=background-color:<t t-esc="c['color']"/> !important/&gt;
+                                            </t>
+                                            <tr t-foreach="obj['data']" t-as="student">
+                                                <td><t t-esc="student['student']"/></td>
+                                                <t t-foreach="student['display']" t-as="details">
+                                                    &lt;td class="text-center oe_leftfit oe_rightfit" style="background-color:<t t-esc="details['color']"/>!important; font-size: 10px" &gt; <t t-esc="details['lesson']"/>&lt;/td&gt;
+                                                </t>
+                                            </tr>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+        </template>
+    </data>
+</odoo>

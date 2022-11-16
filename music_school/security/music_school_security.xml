@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <record id="apply_leave_portal_rule_1" model="ir.rule">-->
+<!--            <field name="name">Portal User Leave Permmission</field>-->
+<!--            <field name="model_id" ref="hr_holidays.model_hr_leave"/>-->
+<!--            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>-->
+<!--            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--            <field name="perm_write" eval="True"/>-->
+<!--            <field name="perm_create" eval="False"/>-->
+<!--            <field name="perm_unlink" eval="False"/>-->
+<!--        </record>-->
+
+<!--        <record id="apply_leave_portal_rule_2" model="ir.rule">-->
+<!--            <field name="name">Portal User Leave Type Permmission</field>-->
+<!--            <field name="model_id" ref="hr_holidays.model_hr_leave_type"/>-->
+<!--            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>-->
+<!--            <field name="perm_read" eval="True"/>-->
+<!--            <field name="perm_write" eval="True"/>-->
+<!--            <field name="perm_create" eval="False"/>-->
+<!--            <field name="perm_unlink" eval="False"/>-->
+<!--        </record>-->
+
+        <record id="music_student_company_rule" model="ir.rule">
+            <field name="name">Music Student</field>
+            <field name="model_id" ref="model_music_student"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="student_class_company_rule" model="ir.rule">
+            <field name="name">Student Class</field>
+            <field name="model_id" ref="model_student_class"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="student_lesson_company_rule" model="ir.rule">
+            <field name="name">Student Lesson</field>
+            <field name="model_id" ref="model_student_lesson"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="student_lesson_track_company_rule" model="ir.rule">
+            <field name="name">Student Lesson Track</field>
+            <field name="model_id" ref="model_student_lesson_track"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_music_school_detail_report" model="ir.ui.view">
+            <field name="name">music.school.detail.report.form</field>
+            <field name="model">music.school.detail.report</field>
+            <field name="arch" type="xml">
+            <form string="Leaves by Department">
+                <group>
+                    <field name="date_from" />
+                    <field name="date_to"/>
+                    <field name="lesson_type"/>
+                    <field name="classes"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <record id="action_music_school_detail_report" model="ir.actions.act_window">
+            <field name="name">Detailed Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">music.school.detail.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <act_window
+            name="Detailed Report"
+            res_model="music.school.detail.report"
+            binding_model="student.class"
+            binding_views="form"
+            view_mode="form"
+            target="new"
+            view_id="music_school.view_music_school_detail_report"
+            id="action_music_school_detail_report_wizard"
+        />
+
+</odoo>

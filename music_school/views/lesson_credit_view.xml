@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       <record id="student_lesson_credit_form" model="ir.ui.view">
+            <field name="name">student.lesson.credit.form</field>
+            <field name="model">lesson.credit</field>
+            <field name="arch" type="xml">
+                <form create="false" string="Lesson Credit">
+                    <header>
+                        <button name="action_postponed" type="object" string="Postponed"  class="oe_highlight"/>
+                        <button name="action_to_repay" type="object" string="To Repay"  class="oe_highlight"/>
+                        <button name="action_refunded" type="object" string="Refunded"  class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="class_id" />
+                                <field name="lesson_id" />
+                                <field name="student_id"/>
+                            </group>
+                            <group>
+                                <field name="start_date" />
+                                <field name="end_date" />
+                                <field name="reported_start_date" />
+                                <field name="reported_end_date" />
+
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+       <record id="student_lesson_credit_tree" model="ir.ui.view">
+            <field name="name">student.lesson.credit.tree</field>
+            <field name="model">lesson.credit</field>
+            <field name="arch" type="xml">
+                <tree  string="Lesson Credit">
+                    <field name="name" />
+                    <field name="class_id" />
+                    <field name="lesson_id" />
+                    <field name="student_id"/>
+                    <field name="start_date" />
+                    <field name="end_date" />
+                    <field name="reported_start_date" />
+                    <field name="reported_end_date" />
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="view_credit_lesson_search" model="ir.ui.view">
+            <field name="name">lesson.credit.search</field>
+            <field name="model">lesson.credit</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Credit">
+                    <field name="name"/>
+                    <newline/>
+
+                    <group expand="0" string="Group By...">
+                        <filter name="class_id" string="Classe"
+                                domain="[]" context="{'group_by':'class_id'}"/>
+                        <filter name="lesson_id" string="Lesson"
+                                domain="[]" context="{'group_by':'lesson_id'}"/>
+                        <filter name="student_id" string="Student"
+                                domain="[]" context="{'group_by':'student_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_open_op_credit_view">
+            <field name="name">Credit</field>
+            <field name="res_model">lesson.credit</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_credit_lesson_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_credit_lesson_main"
+                  name="Credit"
+                  parent="menu_music_student_root"
+                  sequence="110"
+                  action="act_open_op_credit_view"/>
+
+
+    </data>
+</odoo>

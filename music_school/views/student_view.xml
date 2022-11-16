@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_drivingsummary" model="report.paperformat">
+            <field name="name">Absent Summary</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">23</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">20</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            id="action_music_class_report"
+            model="student.class"
+            string="Detailed Report"
+            report_type="qweb-html"
+			name="music_school.music_class_report_summary"
+			file="music_school.music_class_report_summary"
+            paperformat="music_school.paperformat_drivingsummary"
+            menu="False"
+        />
+
+        <record model="ir.ui.view" id="student_track_lesson_search">
+            <field name="name">student.lesson.track.kanban</field>
+            <field name="model">student.lesson.track</field>
+            <field name="arch" type="xml">
+                <search string="Lesson Analysis">
+                     <group>
+                        <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                        <filter string="Started" name="started" domain="[('state','=','started')]"/>
+                        <filter string="Completed" name="completed" domain="[('state','=','completed')]"/>
+                        <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
+                        <separator orientation="vertical"/>
+                        <field name="lesson_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="state"/>
+                        <field name="service_id"/>
+<!--                        <field name="instructor"/>-->
+                         <field name="partner_instructor"/>
+                        <field name="attendance"/>
+                    </group>
+                    <newline/>
+                    <group expand="1" string="Group By">
+                        <filter string="Lesson" name="lesson" context="{'group_by':'lesson_id'}" />
+                        <filter string="Status" name="state" context="{'group_by':'state'}"/>
+                        <separator orientation="vertical"/>
+<!--                        <filter string="Instructor" name="instructor" context="{'group_by':'instructor'}"/>-->
+                        <filter string="Instructor Partner" name="partner_instructor" context="{'group_by':'partner_instructor'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Service" name="service_id" context="{'group_by':'service_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="student_track_lesson_kanban">
+            <field name="name">student.lesson.track.kanban</field>
+            <field name="model">student.lesson.track</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="lesson_id"/>
+                    <field name="start_date"/>
+                    <field name="student_id"/>
+                    <field name="end_date"/>
+                    <field name="state"/>
+                    <field name="service_id"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor"/>
+                    <field name="attendance"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title"><span><t t-esc="record.student_id.value"/></span></strong><br/>
+                                        <strong class="o_kanban_record_title"><span><t t-esc="record.lesson_id.value"/></span></strong><br/>
+                                    </div>
+                                    <field name="attendance" widget="label_selection" options="{'classes': {'present': 'success', 'absent': 'danger'}}"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left text-muted">
+                                        <span> <t t-esc="record.start_date.value"/></span>
+                                        <span> <t t-esc="record.end_date.value"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+       <record id="student_lesson_track_form" model="ir.ui.view">
+            <field name="name">student.lesson.track.form</field>
+            <field name="model">student.lesson.track</field>
+            <field name="arch" type="xml">
+                <form create="false" string="Student Classes">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="student_id" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="start_date" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="end_date" readonly="1"/>
+                                <field name="state" readonly="1"/>
+                                <field name="service_id" readonly="1"/>
+<!--                                <field name="instructor" readonly="1"/>-->
+                                <field name="partner_instructor" domain="[('is_teacher','=',True)]" readonly="1"/>
+                                <field name="attendance"/>
+                                <field name="company_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+       <record id="student_lesson_track_tree" model="ir.ui.view">
+            <field name="name">student.lesson.track.tree</field>
+            <field name="model">student.lesson.track</field>
+            <field name="arch" type="xml">
+                <tree create="false" string="Student Classes">
+                    <field name="student_id"/>
+                    <field name="lesson_id" string="Lesson Name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="state"/>
+                    <field name="service_id"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor"/>
+                    <field name="attendance"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="student_lesson_track_calendar_view">
+            <field name="name">student.lesson.track.calendar</field>
+            <field name="model">student.lesson.track</field>
+            <field name="arch" type="xml">
+                <calendar string="Lessons" date_start="start_date" date_stop="end_date" mode="month" quick_add="false" color="service_id">
+                    <field name="service_id"/>
+<!--                    <field name="instructor"/>-->
+                    <field name="partner_instructor"/>
+                    <field name="name"/>
+                    <field name="student_id" string="Students"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="action_view_student_lessonss" model="ir.actions.act_window">
+            <field name="name">Lessons</field>
+            <field name="res_model">student.lesson.track</field>
+            <field name="view_mode">calendar,tree,kanban,form</field>
+            <field name="view_id" ref="student_lesson_track_calendar_view"/>
+            <field name="domain">[('student_id','=',active_id)]</field>
+            <field name="context">{
+            'default_student_id' :active_id}</field>
+        </record>
+
+
+        <record id="kanban_view_student" model="ir.ui.view">
+            <field name="name">Student Kanban</field>
+            <field name="model">music.student</field>
+            <field name="arch" type="xml">
+                <kanban class="o_res_partner_kanban">
+                    <field name="id"/>
+                    <field name="image_1920"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click o_res_partner_kanban">
+                                <div class="o_kanban_image">
+                                    <t t-if="record.image_1920.value">
+                                        <img t-att-src="kanban_image('music.student', 'image_128', record.id.raw_value)" alt="Student"/>
+                                    </t>
+                                </div>
+                                <div class="oe_kanban_details">
+                                    <h4>
+                                        <a type="open">
+                                            <field name="name"/>
+                                            <t t-if="record.middle_name.raw_value">
+                                                <field name="middle_name"/>
+                                            </t>
+                                            <t t-if="record.last_name.raw_value">
+                                                <field name="last_name"/>
+                                            </t>
+                                        </a>
+                                    </h4>
+                                    <ul>
+                                        <li t-if="record.contact_address.raw_value">
+                                            <field name="contact_address"/>
+                                        </li>
+                                        <li t-if="record.phone.raw_value">
+                                            <field name="phone"/>
+                                        </li>
+                                        <li t-if="record.mobile.raw_value">
+                                            <field name="mobile"/>
+                                        </li>
+                                        <li t-if="record.email.raw_value">
+                                            <a t-attf-href="mailto:#{record.email.value}">
+                                                <field name="email"/>
+                                            </a>
+                                        </li>
+                                        <li t-if="record.lang.raw_value">
+                                            <field name="lang"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_music_student_tree" model="ir.ui.view">
+            <field name="name">music.student.tree</field>
+            <field name="model">music.student</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <tree string="Student">
+                    <field name="title"/>
+                    <field name="name"/>
+                    <field name="middle_name"/>
+                    <field name="last_name"/>
+                    <field name="blood_group"/>
+                    <field name="emergency_contact"/>
+                    <field name="nationality"/>
+                    <field name="lang"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_music_student_form" model="ir.ui.view">
+            <field name="name">music.student.form</field>
+            <field name="model">music.student</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <form string="Student">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="action_view_credit"
+                                    type="object" icon="fa-bars">
+                                <field name="credit_count" string="Credits"  widget="statinfo" icon="fa-usd"/>
+                            </button>
+
+                            <button class="oe_stat_button" name="%(action_view_student_lessonss)d"
+                                    type="action" icon="fa-bars">
+                                <field name="lesson_count" string="Lessons"  widget="statinfo" icon="fa-usd"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="partner_id" string="Already Partner"/>
+                            <field name="partner_id" placeholder="Partner" required="0" options="{'no_create_edit': True}"/>
+                        </div>
+                        <field name="image_1920" widget="image" class="oe_left oe_avatar"/>
+                        <div class="oe_title">
+                            <h3>
+                                <field name="title" placeholder="Title"/>
+                            </h3>
+                            <h1>
+                                <table>
+                                    <tr>
+                                        <td style="padding-right:10px;">
+                                            <field name="name" required="1" placeholder="First Name"/>
+                                        </td>
+                                        <td style="padding-right:10px;">
+                                            <field name="middle_name" placeholder="Middle Name"/>
+                                        </td>
+                                        <td style="padding-right:10px;">
+                                            <field name="last_name" placeholder="Last Name" required="0"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </h1>
+                        </div>
+                        <notebook colspan="4">
+                            <page name="personal_information"
+                                  string="Personal Info">
+                                <group col="4" colspan="4" name="personal_detail">
+                                    <field name="gender" required="1"/>
+                                    <field name="birth_date" required="1"/>
+                                    <field name="nationality"/>
+                                    <field name="visa_info" invisible="1"/>
+                                    <field name="lang"/>
+                                    <field name="blood_group" invisible="1"/>
+                                    <field name="emergency_contact" context="{'show_address': 1}" options='{"always_reload": True}'/>
+                                    <field name="emergency_contact_phone"/>
+                                    <field name="student_identifiant"/>
+                                    <field name="user_id" string="User" readonly="0"/>
+                                    <field name="email" required="1"/>
+                                    <field name="company_id" />
+                                </group>
+                                <group string="Address Detail" name="address">
+                                    <label for="type"/>
+                                    <div name="div_type">
+                                        <field class="oe_inline" name="type"/>
+                                    </div>
+                                    <label for="street" string="Address"/>
+                                    <div name="div_address">
+                                        <field name="street" placeholder="Street..."/>
+                                        <field name="street2" placeholder="Street2"/>
+                                        <div class="address_format">
+                                            <field name="city" placeholder="City" style="width: 40%%"/>
+                                            <field name="state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'/>
+                                            <field name="zip" placeholder="ZIP" style="width: 20%%"/>
+                                        </div>
+                                        <field name="country_id"
+                                               placeholder="Country" class="oe_no_button"
+                                               options='{"no_open": True}'/>
+                                    </div>
+                                </group>
+                            </page>
+                            <page name="Lesson" string="Lesson">
+                                <field name="lesson_ids" readonly="1" nolabel="1" colspan="4" widget="one2many_list" mode="tree,form">
+                                    <tree decoration-danger="attendance == 'absent'">
+                                        <field name="lesson_id" string="Lesson Name"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="state"/>
+                                        <field name="service_id"/>
+<!--                                        <field name="instructor"/>-->
+                                        <field name="partner_instructor" domain="[('is_teacher','=',True)]"/>
+                                        <field name="attendance"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="lesson_id" string="Lesson"/>
+                                            <field name="start_date"/>
+                                            <field name="end_date"/>
+                                            <field name="state"/>
+                                            <field name="service_id"/>
+<!--                                            <field name="instructor"/>-->
+                                            <field name="partner_instructor" domain="[('is_teacher','=',True)]"/>
+                                            <field name="attendance"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_music_student_search" model="ir.ui.view">
+            <field name="name">music.student.search</field>
+            <field name="model">music.student</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Student">
+                    <field name="name"/>
+                    <field name="blood_group"/>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter name="blood_group" string="Blood Group"
+                                domain="[]" context="{'group_by':'blood_group'}"/>
+                        <filter name="nationality" string="Nationality"
+                                domain="[]" context="{'group_by':'nationality'}"/>
+                        <filter name="language" string="Language"
+                                domain="[]" context="{'group_by':'lang'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_open_op_student_view">
+            <field name="name">Students</field>
+            <field name="res_model">music.student</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="view_music_student_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_music_student_root"
+                  name="Music School"
+                  web_icon="music_school,static/description/icon.png"
+                  sequence="25"/>
+
+        <menuitem id="menu_music_student_main_student"
+                  name="Students"
+                  parent="menu_music_student_root"
+                  sequence="10"
+                  action="act_open_op_student_view"/>
+
+<!--        <record id="open_view_employee_list_my_new" model="ir.actions.act_window">-->
+<!--            <field name="name">Teachers</field>-->
+<!--            <field name="res_model">hr.employee</field>-->
+<!--            <field name="view_mode">kanban,tree,form,activity</field>-->
+<!--            <field name="domain">[('is_teacher','=',True)]</field>-->
+<!--            <field name="context">{'default_is_teacher': True}</field>-->
+<!--            <field name="view_id" eval="False"/>-->
+<!--            <field name="search_view_id" ref="hr.view_employee_filter"/>-->
+<!--            <field name="help" type="html">-->
+<!--              <p class="o_view_nocontent_smiling_face">-->
+<!--                Add a new Teacher-->
+<!--              </p><p>-->
+<!--                With just a quick glance on the Odoo employee screen, you-->
+<!--                can easily find all the information you need for each person;-->
+<!--                contact data, job position, availability, etc.-->
+<!--              </p>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="open_view_teacher_partner_list_my_new" model="ir.actions.act_window">
+            <field name="name">Teachers </field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_teacher','=',True)]</field>
+            <field name="context">{'default_is_teacher': True}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        </record>
+
+        <menuitem
+            id="employee_view_for_music_root"
+            name="Human Resource"
+            parent="menu_music_student_root"
+            sequence="20"/>
+
+        <menuitem
+            id="employee_view"
+            action="hr.open_view_employee_list_my"
+            parent="employee_view_for_music_root"
+            sequence="20"/>
+
+        <menuitem
+            id="teacher_partner_view"
+            action="open_view_teacher_partner_list_my_new"
+            parent="employee_view_for_music_root"
+            sequence="20"/>
+
+<!--        <menuitem-->
+<!--            id="teacher_view"-->
+<!--            action="open_view_employee_list_my_new"-->
+<!--            parent="employee_view_for_music_root"-->
+<!--            sequence="20"/>-->
+
+
+        <record id="product_product_action_services" model="ir.actions.act_window">
+            <field name="name">Services</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('type', '=', 'service')]</field>
+            <field name="context">{'search_default_filter_to_sell': 1}</field>
+        </record>
+
+        <menuitem action="product_product_action_services" id="menu_services" parent="menu_music_student_root" sequence="30" />
+
+        <record id="action_view_student_lessons_report" model="ir.actions.act_window">
+            <field name="name">Attendance</field>
+            <field name="res_model">student.lesson.track</field>
+            <field name="view_mode">tree,kanban,pivot,graph,form</field>
+            <field name="view_id" ref="student_lesson_track_calendar_view"/>
+        </record>
+
+        <menuitem action="action_view_student_lessons_report" id="menu_attendance" parent="menu_music_student_root" sequence="100"/>
+
+        <menuitem
+            id="menu_music_equipment_form"
+            name="Instruments"
+            parent="menu_music_student_root"
+            action="maintenance.hr_equipment_action"
+            groups="maintenance.group_equipment_manager,base.group_user"
+            sequence="209"/>
+
+
+
+<!--                                new features                                 -->
+
+        <record id="view_music_location_search" model="ir.ui.view">
+            <field name="name">music.location.search</field>
+            <field name="model">music.location</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="location">
+                    <field name="name"/>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter name="company_group" string="Company"
+                                domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_music_location_form" model="ir.ui.view">
+            <field name="name">music.location.form</field>
+            <field name="model">music.location</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <form string="location">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"/>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_music_location_tree" model="ir.ui.view">
+            <field name="name">music.location.tree</field>
+            <field name="model">music.location</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <tree string="location">
+                    <field name="name"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_open_music_location_view">
+            <field name="name">Locations</field>
+            <field name="res_model">music.location</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_music_location_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+
+
+
+        <menuitem
+            id="menu_music_location"
+            name="Locations"
+            parent="menu_music_student_root"
+            action="act_open_music_location_view"
+
+            sequence="210"/>
+
+
+
+<!--    <record id="hr_equipment_view_form_new" model="ir.ui.view">-->
+<!--        <field name="name">equipment.form</field>-->
+<!--        <field name="model">maintenance.equipment</field>-->
+<!--        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="category_id" position="replace">-->
+<!--                <field name="category_id" string="Instrument Category"/>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="maintenance.hr_equipment_action" model="ir.actions.act_window">-->
+<!--        <field name="name">Instruments</field>-->
+<!--        <field name="res_model">maintenance.equipment</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="view_id" ref="maintenance.hr_equipment_view_kanban"/>-->
+<!--        <field name="help" type="html">-->
+<!--            <p class="o_view_nocontent_smiling_face">-->
+<!--                Add a new equipment-->
+<!--            </p><p>-->
+<!--                Track equipments and link it to an employee or department.-->
+<!--                You will be able to manage allocations, issues and maintenance of your equipment.-->
+<!--            </p>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    &lt;!&ndash; equiment : actions &ndash;&gt;-->
+<!--    <record id="maintenance.hr_equipment_action_from_category_form" model="ir.actions.act_window">-->
+<!--        <field name="name">Instruments</field>-->
+<!--        <field name="res_model">maintenance.equipment</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="search_view_id" ref="maintenance.hr_equipment_view_search"/>-->
+<!--        <field name="view_id" ref="maintenance.hr_equipment_view_kanban"/>-->
+<!--        <field name="context">{-->
+<!--            'search_default_category_id': [active_id],-->
+<!--            'default_category_id': active_id,-->
+<!--        }</field>-->
+<!--        <field name="help" type="html">-->
+<!--            <p class="o_view_nocontent_smiling_face">-->
+<!--                Add a new equipment-->
+<!--            </p><p>-->
+<!--                Track equipments and link it to an employee or department.-->
+<!--                You will be able to manage allocations, issues and maintenance of your equipment.-->
+<!--            </p>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    </data>
+</odoo>

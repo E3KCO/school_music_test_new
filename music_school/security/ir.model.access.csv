@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_music_student_user,music.student.access,music_school.model_music_student,base.group_user,1,1,1,1
+access_student_lesson_user,student.lesson.access,music_school.model_student_lesson,base.group_user,1,1,1,1
+access_student_class_user,student.class.access,music_school.model_student_class,base.group_user,1,1,1,1
+access_student_lesson_track_user,student.lesson.track.access,music_school.model_student_lesson_track,base.group_user,1,1,1,1
+access_month_days_user,month.days.access,music_school.model_month_days,base.group_user,1,1,1,1
+access_music_location_user,music.location.access,music_school.model_music_location,base.group_user,1,1,1,1
+access_lesson_attendance_user,lesson.attendance.access,music_school.model_lesson_attendance,base.group_user,1,1,1,1
+access_music_school_detail_report,music.school.detail.report.access,music_school.model_music_school_detail_report,base.group_user,1,1,1,1
+access_music_school_summary_report,music.school.summary.report.access,music_school.model_music_school_summary_report,base.group_user,1,1,1,1
+access_add_lessons,add.lessons.access,music_school.model_add_lessons,base.group_user,1,1,1,1
+access_lesson_credit,lesson.credit.access,music_school.model_lesson_credit,base.group_user,1,1,1,1
+access_postponed_credit,postponed.credit.access,music_school.model_postponed_credit,base.group_user,1,1,1,1
+
