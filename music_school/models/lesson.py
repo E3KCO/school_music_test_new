@@ -410,7 +410,6 @@ class AddLessons(models.TransientModel):
             str(nbr).zfill(padding),
             suffix
         ))
-        raise UserError('sdsd')
         return text_name
 
 
