@@ -404,8 +404,8 @@ class AddLessons(models.TransientModel):
         splitted = regex_split(initial_number, self.lesson_name)
         # initial_number could appear several times in the SN, e.g. BAV023B00001S00001
         prefix = initial_number.join(splitted[:-1])
-        suffix =' '+ splitted[-1]
-        text_name = ('%s%s%s') % ((
+        suffix = splitted[-1]
+        text_name = ('%s%s %s') % ((
             prefix,
             str(nbr).zfill(padding),
             suffix
