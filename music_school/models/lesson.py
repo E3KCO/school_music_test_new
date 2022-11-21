@@ -396,21 +396,21 @@ class AddLessons(models.TransientModel):
 
 
 
-    def test(self,nbr):
+    def test(self,name_lesson,nbr):
         sequence_names = []
-        initial_number = self.lesson_name[-1]
+        initial_number = name_lesson[-1]
         padding = len(initial_number)
         # We split the serial number to get the prefix and suffix.
-        splitted = regex_split(initial_number, self.lesson_name)
+        splitted = regex_split(initial_number, name_lesson)
         # initial_number could appear several times in the SN, e.g. BAV023B00001S00001
         prefix = initial_number.join(splitted[:-1])
-        suffix = splitted[-1]
+        suffix =splitted[-1]
         text_name = ('%s%s %s') % ((
             prefix,
             str(nbr).zfill(padding),
             suffix
         ))
-
+        raise UserError('sdsd')
         return text_name
 
 
@@ -430,7 +430,8 @@ class AddLessons(models.TransientModel):
 
         if not caught_initial_number:
             # raise UserError(_('The name of the lesson must contain at least one digit.'))
-            name_of_lesson = name_of_lesson + '1'
+            name_of_lesson = name_of_lesson + ' 1'
+        print('name_of_lesson',name_of_lesson)
         cpt_t = int(name_of_lesson[-1])
 
         if class_info.repeat == 'daily':
@@ -443,7 +444,7 @@ class AddLessons(models.TransientModel):
                 end_time_value = datetime.strftime(end_time, "%H:%M:%S")
                 day_end_value = datetime.strftime(day_end, "%Y-%m-%d")
                 final_time = datetime.strptime(day_end_value+' '+end_time_value, "%Y-%m-%d %H:%M:%S")
-                name_lesson = self.test(cpt_t)
+                name_lesson = self.test(name_of_lesson,cpt_t)
 
                 lesson_id = lesson.create({
                     'name':name_lesson,
@@ -485,7 +486,7 @@ class AddLessons(models.TransientModel):
                 end_time_value = datetime.strftime(end_time, "%H:%M:%S")
                 day_end_value = datetime.strftime(day_end, "%Y-%m-%d")
                 final_time = datetime.strptime(day_end_value + ' ' + end_time_value, "%Y-%m-%d %H:%M:%S")
-                name_lesson = self.test(cpt_t)
+                name_lesson = self.test(name_of_lesson,cpt_t)
                 if class_info.monday:
                     if week_day == 0:
                         lesson_id = lesson.create({
@@ -701,7 +702,7 @@ class AddLessons(models.TransientModel):
                 end_time_value = datetime.strftime(end_time, "%H:%M:%S")
                 day_end_value = datetime.strftime(day_end, "%Y-%m-%d")
                 final_time = datetime.strptime(day_end_value+' '+end_time_value, "%Y-%m-%d %H:%M:%S")
-                name_lesson = self.test(cpt_t)
+                name_lesson = self.test(name_of_lesson,cpt_t)
                 for line in class_info.monthly_dates:
                     day_value = datetime.strptime(str(line.date), "%Y-%m-%d")
                     repeat_date = str(line.date)
