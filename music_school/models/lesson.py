@@ -88,33 +88,25 @@ class StudentClass(models.Model):
             if  len(self.student_ids) > int(self.available_spaces) :
                 raise UserError('la capacité maximale des places est atteinte')
 
-    # @api.onchange('student_ids')
+
     def update_students_ids(self):
-        print('onchange_students_ids')
-        print('student_ids',self.student_ids.ids)
-        # raise UserError('dfsf')
-        filtered_lesson = self.lesson_ids.filtered(lambda r:r.state not in ['started','completed', 'done'])
-        print('filtered_lesson',filtered_lesson)
+
+        filtered_lesson = self.lesson_ids.filtered(lambda r:r.state not in ['started','completed', 'cancelled'])
         student_in_lesson = filtered_lesson.mapped('student_ids').ids
-        print('student_in_lesson',student_in_lesson)
         list_difference = [element for element in self.student_ids.ids if element not in student_in_lesson]
-        print('list_difference', list_difference)
         student_to_delete_from_lesson = [element for element in student_in_lesson if element not in self.student_ids.ids]
         if student_to_delete_from_lesson:
             for lesson in filtered_lesson:
                 for std in student_to_delete_from_lesson:
                     student_obj = self.env['music.student'].browse(std)
-                    print('lesson',lesson._origin)
                     lesson._origin.student_ids -= student_obj
                     track_to_delete = self.env['student.lesson.track'].search([('student_id','=',std),('lesson_id','=',lesson._origin.id)])
-                    print('track_to_delete',track_to_delete)
                     track_to_delete.unlink()
 
         for lesson in filtered_lesson:
             for diff in list_difference:
                 if diff not in lesson.student_ids.ids:
                     student_obj = self.env['music.student'].browse(diff)
-                    print('lesson',lesson._origin)
                     lesson._origin.student_ids += student_obj
                     track =self.env['student.lesson.track'].create({
                         'name': lesson._origin.name,
@@ -253,7 +245,6 @@ class StudentLesson(models.Model):
         for rec in self:
             rec.lesson_duration = 0.0
             diff_of_date = (rec.end_date - rec.start_date).total_seconds() / 60.0
-            print('diff_of_date',diff_of_date)
             rec.lesson_duration = diff_of_date
             rec.duration = diff_of_date / 60
 
@@ -311,20 +302,19 @@ class LessonAttendance(models.Model):
 
     @api.onchange("to_credit")
     def create_lesson_credit(self):
-        print('lesson_id',self.lesson_id._origin)
-        print('student_id', self.student_id)
         check_credit = self.env['lesson.credit'].search([('lesson_id','=',self.lesson_id._origin.id),('student_id','=',self.student_id.id)])
-        print('check_credit',check_credit)
         if self.lesson_id._origin.state in ['confirmed','completed','canceled'] and self.to_credit :
             credit_obj = self.env['lesson.credit'].create({
                 'name': self.student_id.name,
                 'lesson_id':self.lesson_id._origin.id,
+                'class_id':self.lesson_id.class_id.id,
+                'student_id': self.lesson_id.id,
                 'student_id':self.student_id.id,
                 'start_date':self.lesson_id._origin.start_date,
                 'end_date':self.lesson_id._origin.end_date,
                 'state':'draft',
             })
-            print('credit_obj',credit_obj)
+
 
 
     def confirm_student(self):
@@ -414,13 +404,13 @@ class AddLessons(models.TransientModel):
         splitted = regex_split(initial_number, self.lesson_name)
         # initial_number could appear several times in the SN, e.g. BAV023B00001S00001
         prefix = initial_number.join(splitted[:-1])
-        suffix = splitted[-1]
+        suffix =' '+ splitted[-1]
         text_name = ('%s%s%s') % ((
             prefix,
             str(nbr).zfill(padding),
             suffix
         ))
-        print('text_name',text_name)
+
         return text_name
 
 
@@ -432,15 +422,17 @@ class AddLessons(models.TransientModel):
         class_info = self.env['student.class'].browse(active_id)
         if not data['student_ids']:
             raise UserError(_("You must select student(s) to generate lessons(s)."))
+        name_of_lesson = self.lesson_name
         # Add 1 day.
         day=0
         class_info.with_context().write({'student_ids': [(6, 0, self.student_ids.ids)]})
-        caught_initial_number = regex_findall("\d+", self.lesson_name)
-        print('caught_initial_number')
+        caught_initial_number = regex_findall("\d+", name_of_lesson)
+
         if not caught_initial_number:
-            raise UserError(_('The name of the lesson must contain at least one digit.'))
-        cpt_t = int(self.lesson_name[-1])
-        print('xxxcpt_t',cpt_t)
+            # raise UserError(_('The name of the lesson must contain at least one digit.'))
+            name_of_lesson = name_of_lesson + '1'
+        cpt_t = int(name_of_lesson[-1])
+
         if class_info.repeat == 'daily':
             while class_info.end_date >= class_info.start_date:
                 result = class_info.start_date + timedelta(days=day)
@@ -452,7 +444,7 @@ class AddLessons(models.TransientModel):
                 day_end_value = datetime.strftime(day_end, "%Y-%m-%d")
                 final_time = datetime.strptime(day_end_value+' '+end_time_value, "%Y-%m-%d %H:%M:%S")
                 name_lesson = self.test(cpt_t)
-                print('name_lesson',name_lesson)
+
                 lesson_id = lesson.create({
                     'name':name_lesson,
                     'start_date':result,
@@ -487,18 +479,15 @@ class AddLessons(models.TransientModel):
                 result = class_info.start_date + timedelta(days=day)
                 day+=1
                 week_day = result.weekday()
-                print('week_day',week_day)
                 end_time = datetime.strptime(str(class_info.end_date), "%Y-%m-%d %H:%M:%S")
                 day_end = datetime.strptime(str(result), "%Y-%m-%d %H:%M:%S")
                 # convert into datetime fromat
                 end_time_value = datetime.strftime(end_time, "%H:%M:%S")
                 day_end_value = datetime.strftime(day_end, "%Y-%m-%d")
                 final_time = datetime.strptime(day_end_value + ' ' + end_time_value, "%Y-%m-%d %H:%M:%S")
-                print('zzzz cpt', cpt_t)
                 name_lesson = self.test(cpt_t)
                 if class_info.monday:
                     if week_day == 0:
-                        print('monday cpt',cpt_t)
                         lesson_id = lesson.create({
                             'name': name_lesson,
                             'start_date': result,

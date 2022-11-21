@@ -17,12 +17,13 @@ class MusicSchoolSummaryReport(models.TransientModel):
 
 
     def action_create_new_lesson(self):
-        print('action_create_new_lesson')
         lesson_copy = self.credit_id.lesson_id.copy()
-        lesson_copy.write({'name':lesson_copy.name + 'Reporté',
+        lesson_copy.write({'name':lesson_copy.name,  #+ 'Reporté',
                            'start_date':self.next_start_date,
                            'end_date':self.next_end_date,
                            'state':'draft'})
+        self.credit_id.reported_start_date = self.next_start_date
+        self.credit_id.reported_end_date = self.next_end_date
         self.credit_id.state = 'postponed'
         return {
             'name': _('Lessons'),

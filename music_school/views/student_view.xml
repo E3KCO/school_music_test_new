@@ -300,9 +300,9 @@
                                     <field name="student_identifiant"/>
                                     <field name="user_id" string="User" readonly="0"/>
                                     <field name="email" required="1"/>
-                                    <field name="company_id" />
+                                    <field name="company_id" invisible="1"/>
                                 </group>
-                                <group string="Address Detail" name="address">
+                                <group string="Address Detail" name="address" invisible="1">
                                     <label for="type"/>
                                     <div name="div_type">
                                         <field class="oe_inline" name="type"/>

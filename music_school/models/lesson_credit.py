@@ -24,8 +24,7 @@ class LessonCredit(models.Model):
 
 
     def action_postponed(self):
-        print('Reporté')
-        print('id',self.id)
+
         return {
             'name': _("Postponed Credit"),
             'view_mode': 'form',
@@ -38,9 +37,8 @@ class LessonCredit(models.Model):
         }
 
     def action_to_repay(self):
-        print('A remboursé')
+
         self.write({'state':'to_repay'})
 
     def action_refunded(self):
-        print('Remboursé')
         self.write({'state': 'refunded'})

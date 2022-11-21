@@ -56,14 +56,14 @@
                         <newline/>
                         <field name="student_ids" nolabel="1">
                             <tree>
-                                <field name="title"/>
+                                <field name="title" invisible="1"/>
                                 <field name="name"/>
 <!--                                <field name="middle_name"/>-->
 <!--                                <field name="last_name"/>-->
 <!--                                <field name="lang"/>-->
                             </tree>
                         </field>
-                        <field name="company_id" nolabel="1"/>
+                        <field name="company_id" nolabel="1" invisible="1"/>
                     </group>
                 </form>
             </field>
@@ -211,7 +211,10 @@
                             </group>
                             <group>
 <!--                                <field name="instructor" attrs="{'readonly': [('state', '!=', 'draft')]}"/>-->
-                                <field name="partner_instructor" domain="[('is_teacher','=',True)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="partner_instructor" domain="[('is_teacher','=',True)]"
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                       options="{'no_edit': True, 'no_create': True, 'no_open': True}"/>
+
                                 <field name="location" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="available_spaces" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="student_ids" widget="many2many_tags" attrs="{'readonly': [('state', 'not in', ['draft','started'])]}"
@@ -384,10 +387,48 @@
             </field>
         </record>
 
+    <record id="student_lesson_gantt_view" model="ir.ui.view">
+        <field name="name">student.lessons.gantt.view</field>
+        <field name="model">student.lesson</field>
+        <field name="arch" type="xml">
+            <gantt  date_stop="end_date" date_start="start_date" string="Lessons"
+                    default_group_by="name"
+                    create="0"
+                    delete="0"
+
+                color="class_id"
+                display_unavailability="1"
+                sample="1"
+               >
+
+                <field name="start_date"/>
+                <field name="state"/>
+                <field name="end_date"/>
+                <field name="class_id"/>
+                <field name="name"/>
+                <field name="duration"/>
+
+                <templates>
+                    <div t-name="gantt-popover" class="container-fluid">
+                        <div class="row no-gutters">
+                            <div class="col">
+                                <ul class="pl-1 mb-0 list-unstyled">
+                                    <div><strong>Start - Date: </strong><t t-esc="userTimezoneStartDate.format('l LT')"/></div>
+                                    <li><strong>End - Date: </strong> <t t-esc="userTimezoneStopDate.format('L LTS')"/></li>
+                                    <li><strong>duration: </strong> <t t-esc="duration"/></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </templates>
+            </gantt>
+        </field>
+    </record>
+
         <record id="action_student_lesson_tree" model="ir.actions.act_window">
             <field name="name">Lessons</field>
             <field name="res_model">student.lesson</field>
-            <field name="view_mode">tree,calendar,form</field>
+            <field name="view_mode">tree,calendar,form,gantt</field>
             <field name="search_view_id" ref="view_student_lesson_search"/>
             <field name="context">{'search_default_today_filter':1 }</field>
         </record>

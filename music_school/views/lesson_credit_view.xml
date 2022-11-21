@@ -23,8 +23,8 @@
                             <group>
                                 <field name="start_date" />
                                 <field name="end_date" />
-                                <field name="reported_start_date" />
-                                <field name="reported_end_date" />
+                                <field name="reported_start_date"  readonly="1"/>
+                                <field name="reported_end_date" readonly="1"/>
 
                             </group>
                         </group>
